@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+
+<body>
+<style>
+    .full-window{
+        padding: 10%;
+        height: 638px;
+        background-color: #122b40;
+    }
+    .input-name-label{
+        color:#fff;
+        font-size: 50px;
+        margin-bottom: 20px;
+    }
+    .input-name{
+        width: 50%;
+        font-size: 26px;
+        color: #122b40;
+        margin-bottom: 20px;
+    }
+    .alert-area{
+       position: absolute;
+        top:15%;
+        left:30%;
+        z-index: 100;
+        padding: 5px;
+        width:40%;
+    }
+    .question{
+        padding: 10%;
+        height: 638px;
+        background-color: #122b40;
+    }
+    .question-str{
+           color:#fff;
+           font-size: 20px;
+    }
+    .ans{
+        color: #fff;
+
+    }
+    label{
+        color: #fff;
+    }
+
+</style>
+   <div class="container-fluid">
+       <div class="row">
+           <div class="col-sm-12 text-center full-window">
+                  <div class="form-group text-center ">
+                      <label class="alert alert-danger alert-dismissible alert-area" hidden role="alert">Please Enter Your Name</label>
+                      <br>
+                      <label class="input-name-label" for="">Enter Your Name</label><br>
+                      <input type="text"  class="form-control col-sm-offset-3 colo-sm-6 text-center input-name" >
+                      <br>
+                      <button class="btn btn-success btn-lg start-test" style="font-size: 30px;">Start Test</button>
+                  </div>
+           </div>
+           <div class="col-sm-12 text-center question " id="QuestionBlock" hidden>
+
+           </div>
+       </div>
+   </div>
+<script src="js/jquery-2.2.3.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+             var data=new Object();
+                  data={
+                      "Number":1,
+                      "Question":"How do you feel about God?",
+                      "option1": "He doesn't exist.",
+                      "option2":"He is powerful and good.",
+                      "option3":"He is neither good nor powerful. ",
+                      "option4":"He is good but not powerful.",
+                      "correct":"He is powerful and good."
+                  };
+                  localStorage.setItem("Question1",JSON.stringify(data));
+        data={
+            "Number":2,
+            "Question":"This page is developed in which language?",
+            "option1": "PHP",
+            "option2":"JAVA",
+            "option3":"Angular ",
+            "option4":"jQuery",
+            "correct":"jQuery"
+        };
+        localStorage.setItem("Question2",JSON.stringify(data));
+
+        data={
+            "Number":3,
+            "Question":"Who is the President of India?",
+            "option1": "Narendra Modi",
+            "option2":"Amit Shah",
+            "option3":"Rahul Ghandhi",
+            "option4":"Pranab Mukherjee",
+            "correct":"jQuery"
+        };
+        localStorage.setItem("Question3",JSON.stringify(data));
+        data={
+            "Number":4,
+            "Question":"Arwind Kejariwal is the CM of which State?",
+            "option1": "Uttar Pradesh",
+            "option2":"Punjab",
+            "option3":"Delhi",
+            "option4":"Goa",
+            "correct":"Delhi"
+        };
+        localStorage.setItem("Question4",JSON.stringify(data));
+        data={
+            "Number":5,
+            "Question":"In which year of First World War Germany declared war on Russia and France?",
+            "option1": "1914",
+            "option2":"1915",
+            "option3":"1916",
+            "option4":"1917",
+            "correct":"1914	"
+        };
+        localStorage.setItem("Question5",JSON.stringify(data));
+
+            var totalQuestion= localStorage.getItem("TotalQuestion");
+                totalQuestion=parseInt(totalQuestion);
+                if(totalQuestion==null || totalQuestion=="" || totalQuestion==undefined || !$.isNumeric(totalQuestion)){
+                    localStorage.setItem("TotalQuestion",5);
+                }
+        var SolvedQuestion=localStorage.getItem("SolvedQuestion");
+        SolvedQuestion=parseInt(SolvedQuestion);
+        if(!$.isNumeric(SolvedQuestion) || SolvedQuestion==null || SolvedQuestion==null || SolvedQuestion==""){
+            localStorage.setItem("SolvedQuestion",0);
+        }
+
+                var name=localStorage.getItem("Name");
+                 if(name==null || name==""){
+                    $(".full-window").show();
+                 } else{
+                     var SolvedQuestion=localStorage.getItem("SolvedQuestion");
+                     SolvedQuestion=parseInt(SolvedQuestion);
+
+                         $(".full-window").hide();
+
+                         FetchQuestion(SolvedQuestion+1);
+
+                 }
+
+
+
+            $(".start-test").on("click",function () {
+                var name=$(".input-name").val();
+
+               if(name==null || name=="undefined" || name==""){
+
+                   $(".alert").show().fadeOut(5000);
+                   return false;
+               }  else{
+                   $(".alert").removeClass("alert-danger").addClass("alert-success").text("!!! Congratulations !!!").show().fadeOut(4000);
+                   $(".full-window").fadeOut(4000);
+                   localStorage.setItem("Name",name);
+                   FetchQuestion(1);
+
+               }
+            });
+        $(".ans").on("click",function () {
+              var solved= localStorage.getItem("SolvedQuestion") ;
+                solved=parseInt(solved);
+                 solved++;
+            if(solved>5){
+                return false;
+            }
+              localStorage.setItem("SolvedQuestion",solved);
+            var answer="Answer"+solved;
+             var value=$(this).attr('value');
+            localStorage.setItem(answer,value);
+            if(solved=5){
+                return false;
+            }
+              FetchQuestion(solved+1);
+
+        });
+
+
+
+    });
+
+    function FetchQuestion($number){
+        var key="Question"+$number;
+        var data=localStorage.getItem(key);
+        data=JSON.parse(data);
+        var table='';
+        table+='<div class=" col-sm-offset-3 col-sm-6 form-group text-left">';
+        table+='<label for="" class="question-str">'+$number+' )'+ data.Question+'</label>';
+        table+='<div class="radio">';
+        table+='<label >';
+        table+='<input type="radio" class="ans"  name="gender" data-value="'+data.correct+'" value="'+data.option1+'">';
+        table+=data.option1+'  </label></div>';
+        table+='<div class="radio"><label >';
+        table+=' <input type="radio" class="ans" name="gender"  value="'+data.option2+'" data-value="'+data.option2+'">';
+        table+=data.option2+' </label></div>';
+        table+='<div class="radio">';
+        table+=' <label >';
+        table+=' <input type="radio"  class="ans" name="gender" value="'+data.option3+'" data-value="'+data.option3+'">';
+        table+=data.option3+' </label >  </div>';
+        table+='<div class="radio">';
+        table+=' <label>';
+        table+='     <input  class="ans" type="radio"  name="gender" value="'+data.option4+'" data-value="'+data.option4+'">';
+        table+=data.option4+' </label ></div></div>';
+
+        $("#QuestionBlock").empty();
+        $("#QuestionBlock").html(table).show().fadeIn(3000);
+
+
+    }
+</script>
+</body>
+</html>
