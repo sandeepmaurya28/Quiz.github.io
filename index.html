@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Quiz</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
+
 </head>
 
 <body>
@@ -37,8 +38,14 @@
         height: 638px;
         background-color: #122b40;
     }
+    .charts-area{
+        background-color: #122b40;
+        height:638px;
+        padding:8%;
+        padding-left: 0px;
+    }
     .question-str{
-           color:#fff;
+           color:#122b40;
            font-size: 20px;
     }
     .ans{
@@ -46,9 +53,13 @@
 
     }
     label{
-        color: #fff;
-    }
+        color: #122b40;
 
+    }
+     .block{
+         background-color: #fff;
+         padding:5%;
+     }
 </style>
    <div class="container-fluid">
        <div class="row">
@@ -62,14 +73,21 @@
                       <button class="btn btn-success btn-lg start-test" style="font-size: 30px;">Start Test</button>
                   </div>
            </div>
-           <div class="col-sm-12 text-center question " id="QuestionBlock" hidden>
+           <div class="col-sm-12 text-center question "  id="QuestionBlock" hidden>
 
+           </div>
+           <div class="col-sm-12 charts-area" hidden id="charts">
+                   <div class="col-sm-offset-3 col-sm-6 " id="container" style="height: 400px;" ></div>
            </div>
        </div>
    </div>
 <script src="js/jquery-2.2.3.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script>
+
     $(document).ready(function () {
              var data=new Object();
                   data={
@@ -100,7 +118,7 @@
             "option2":"Amit Shah",
             "option3":"Rahul Ghandhi",
             "option4":"Pranab Mukherjee",
-            "correct":"jQuery"
+            "correct":"Pranab Mukherjee"
         };
         localStorage.setItem("Question3",JSON.stringify(data));
         data={
@@ -120,7 +138,7 @@
             "option2":"1915",
             "option3":"1916",
             "option4":"1917",
-            "correct":"1914	"
+            "correct":"1914"
         };
         localStorage.setItem("Question5",JSON.stringify(data));
 
@@ -143,7 +161,11 @@
                      SolvedQuestion=parseInt(SolvedQuestion);
 
                          $(".full-window").hide();
-
+                             if(SolvedQuestion>=5){
+                                 $("#QuestionBlock").fadeOut(3000);
+                                 Charts();
+                                 $("#charts").show().fadeIn(3000);
+                                 return false;}
                          FetchQuestion(SolvedQuestion+1);
 
                  }
@@ -161,25 +183,34 @@
                    $(".alert").removeClass("alert-danger").addClass("alert-success").text("!!! Congratulations !!!").show().fadeOut(4000);
                    $(".full-window").fadeOut(4000);
                    localStorage.setItem("Name",name);
+
                    FetchQuestion(1);
 
                }
             });
-        $(".ans").on("click",function () {
+        $("form input[type='radio']").on("click",function (e) {
+
               var solved= localStorage.getItem("SolvedQuestion") ;
                 solved=parseInt(solved);
-                 solved++;
-            if(solved>5){
-                return false;
-            }
-              localStorage.setItem("SolvedQuestion",solved);
-            var answer="Answer"+solved;
+                  solved++;
+            var answer="Answer"+(solved);
              var value=$(this).attr('value');
             localStorage.setItem(answer,value);
-            if(solved=5){
+            if(solved>5){
                 return false;
+            }else if(solved==5){
+                localStorage.setItem("SolvedQuestion",5);
+                $("#QuestionBlock").fadeOut(3000);
+                UpdateScore();
+                Charts();
+                $("#charts").fadeIn(1000);
+
+                      return false;
+            } else{
+
+                FetchQuestion(solved+1);
             }
-              FetchQuestion(solved+1);
+
 
         });
 
@@ -188,33 +219,99 @@
     });
 
     function FetchQuestion($number){
+
+        localStorage.setItem("SolvedQuestion",$number-1);
         var key="Question"+$number;
         var data=localStorage.getItem(key);
         data=JSON.parse(data);
         var table='';
-        table+='<div class=" col-sm-offset-3 col-sm-6 form-group text-left">';
+        table+='<div class=" col-sm-offset-3 col-sm-6 text-left block">';
+        table+='<form class="form-group">';
         table+='<label for="" class="question-str">'+$number+' )'+ data.Question+'</label>';
         table+='<div class="radio">';
-        table+='<label >';
         table+='<input type="radio" class="ans"  name="gender" data-value="'+data.correct+'" value="'+data.option1+'">';
+        table+='<label >';
         table+=data.option1+'  </label></div>';
-        table+='<div class="radio"><label >';
-        table+=' <input type="radio" class="ans" name="gender"  value="'+data.option2+'" data-value="'+data.option2+'">';
+        table+='<div class="radio">';
+        table+=' <input type="radio" class="ans" name="gender"  value="'+data.option2+'" data-value="'+data.option2+'"><label >';
         table+=data.option2+' </label></div>';
         table+='<div class="radio">';
-        table+=' <label >';
+
         table+=' <input type="radio"  class="ans" name="gender" value="'+data.option3+'" data-value="'+data.option3+'">';
+        table+=' <label >';
         table+=data.option3+' </label >  </div>';
         table+='<div class="radio">';
-        table+=' <label>';
+
         table+='     <input  class="ans" type="radio"  name="gender" value="'+data.option4+'" data-value="'+data.option4+'">';
-        table+=data.option4+' </label ></div></div>';
+        table+=' <label>';
+        table+=data.option4+' </label ></div></form></div>';
 
         $("#QuestionBlock").empty();
-        $("#QuestionBlock").html(table).show().fadeIn(3000);
+        $("#QuestionBlock").html(table).fadeIn(3000);
 
 
     }
+
+    function UpdateScore(){
+                 var correct=0;
+         for(i=1;i<=5;i++){
+             var Question="Question"+i;
+           var data=  localStorage.getItem(Question);
+             data=JSON.parse(data);
+             var getAnswer=localStorage.getItem("Answer"+i);
+              if(getAnswer==data.correct){
+                      correct++;
+              }
+         }
+
+
+
+         localStorage.setItem("correct",correct);
+    }
+
+
+function Charts() {
+            var correct=localStorage.getItem("correct");
+                correct=parseInt(correct);
+
+    Highcharts.chart('container', {
+        chart: {
+            type: 'pie',
+            options3d: {
+                enabled: true,
+                alpha: 45,
+                beta: 0
+            }
+        },
+        title: {
+            text: 'Your Score Card'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                depth: 35,
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Score',
+            data: [
+                ['Correct Answer', correct],
+                ['InCorrect Answer',(5-correct)]
+
+            ]
+        }]
+    });
+}
+
 </script>
 </body>
 </html>
