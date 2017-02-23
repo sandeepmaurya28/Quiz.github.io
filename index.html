@@ -180,10 +180,11 @@
                  if(name==null || name==""){
                     $(".full-window").show();
                  } else{
+                     $(".full-window").hide();
                      var SolvedQuestion=localStorage.getItem("SolvedQuestion");
                      SolvedQuestion=parseInt(SolvedQuestion);
 
-                         $(".full-window").hide();
+
                              if(SolvedQuestion>=5){
                                  $("#QuestionBlockMain").fadeOut(3000);
                                  Charts();
