@@ -25,6 +25,7 @@
         font-size: 26px;
         color: #122b40;
         margin-bottom: 20px;
+        text-transform: uppercase;
     }
     .alert-area{
        position: absolute;
@@ -253,15 +254,15 @@
                   Ques=JSON.parse(Ques);
               var Ans=localStorage.getItem(Answer);
              table+="<div class='' >" +
-                     " <label class='alert alert-danger' style='width: 95%;'>Question : "+Ques.Question+"</label><br>";
-              table+="<label class='alert alert-success'style='width: 45%;margin-right: 5%;background-color: #fff;' >Correct Answer : "+Ques.correct+"</label>";
+                     " <label class='alert glyphicon  glyphicon-tags' style='width: 95%;color:#2b75b3;font-size: 16px; font-weight: 500;'> "+Ques.Question+"</label><br>";
+              table+="<label class='glyphicon glyphicon-record 'style='width: 45%;margin-right: 5%;background-color: #fff;font-size: 14px ; font-weight: 500; padding-left: 4%;color: forestgreen;' > "+Ques.correct+"</label>";
               if(Ans==Ques.correct){
-                  table+="<label class='alert alert-success ' style='width: 45%; background-color: #fff; '>Your Answer : "+Ans+" <span class='glyphicon glyphicon-ok ' style='color: #4cae4c'></span></label>";
+                  table+="<label class=' glyphicon glyphicon-user ' style='color: #585a5d; width: 45%; background-color: #fff;font-size: 14px ; font-weight: 500; '> "+Ans+" <span class='glyphicon glyphicon-ok ' style='color: forestgreen'></span></label>";
               } else{
-                  table+="<label class='alert alert-info' style='width: 45%; background-color: #fff;'>Your Answer : "+Ans+" <span class='glyphicon glyphicon-remove ' style='color: #ac2925'></span></label>";
+                  table+="<label class='glyphicon glyphicon-user' style=' color:#585a5d;width: 45%; background-color: #fff;font-size: 14px ; font-weight: 500;'> "+Ans+" <span class='glyphicon glyphicon-remove ' style='color: #ac2925'></span></label>";
               }
 
-              table+="</div>";
+              table+="</div><hr style='margin-top: 7px; margin-bottom: 7px;'>";
           }
           table+="</form>";
          $("#show-details").html(table);
